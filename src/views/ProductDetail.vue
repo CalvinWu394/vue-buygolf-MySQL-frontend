@@ -1,15 +1,18 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import { doc, getDocs } from "firebase/firestore"; // 引入抓取單一文件的方法
+import { doc, getDoc } from "firebase/firestore"; // 引入抓取單一文件的方法
 import { db } from "../firebase/config.js";
 import { useRoute } from "vue-router";
 
 const route = useRoute(); // 取得 route 物件
 const product = ref(null); // 用來存放單一商品資料
 const loading = ref(true); // 載入狀態
+const errorMsg = ref("");
+const quantity = ref(1);
 
 // 從網址參數中取得商品 ID
 const productId = route.params.id;
+console.log(route.params.id);
 
 /*const all = ref([]);
 const categories = ref([]);
@@ -21,17 +24,20 @@ categories.value = ["全部","高爾夫球","球具","配件"];*/
 //等待onMounted()來呼叫連接資料庫
 const fetchData = async () => {
 try{
-  const docSnap = await getDocs(doc(db, "allProducts", productId));
+  const docSnap = await getDoc(doc(db, "allProducts", productId));
   if (docSnap.exists()) {
+    const openData = docSnap.data();   //先呼叫 .data() 這個函式，把包裹打開，才能拿到裡面的東西
     product.value = { 
-      id: docSnap.id,
-      name: docSnap.name,
-      category: docSnap.category,
-      price: docSnap.price,
-      image: docSnap.image,
-      rating: docSnap.rating,
-      description: docSnap.description
-    }}else {
+      firestoreId: docSnap.id,
+      name: openData.name,
+      category: openData.category,
+      price: openData.price,
+      image: openData.image,
+      rating: openData.rating,
+      description: openData.description
+    }
+  }
+  else {
         // 這是「預期中」的查無資料，不算是一個系統錯誤
         console.log("找不到此商品!");
         errorMsg.value = '很抱歉，我們找不到您要的商品。';
@@ -41,12 +47,13 @@ try{
     console.error("讀取商品詳細資料時發生錯誤:", error);
     // 我們可以設定一個對使用者友善的錯誤訊息
     errorMsg.value = '載入資料時發生問題，請稍後再試或聯繫客服。';
-}finally {
+  } finally {
     // 【Finally 區塊】：不論 try 成功或 catch 捕捉到錯誤，這裡的程式碼「永遠」會被執行
     // 這是用來確保 loading 狀態一定會被解除的最佳位置
     loading.value = false;
 }
 };
+
 
 onMounted(() => {
   fetchData();
@@ -98,135 +105,192 @@ onMounted(() => {
 
 
   <template>
+  <!-- 這邊的v-if是用來等待時間差，讓Firebase把資料塞進product  -->
+  <div class="product-page-container">
+    <div v-if="loading" class="status-message">載入中...</div>   
+    
+    <div v-else-if="errorMsg" class="status-message error">{{ errorMsg }}</div>
+    
+    <div v-else-if="product">
+      <nav class="breadcrumb">
+        <!-- <RouterLink to="/">首頁</RouterLink>  -->
+        <span>{{ product.category }}</span> 
+        <span>{{ product.name }}</span>
+      </nav>
 
-  <div v-if="loading">載入中...</div>
-  <div v-else="product" class="product-detail-container">
-    <img :src="product.image" :alt="product.name" class="product-image">
-    <div class="product-info">
-    <h1>{{ product.name }}</h1>
-    <p class="product-price">NT$ {{ product.price }}</p>
-    <p class="product-rating">評價: {{ product.rating }} ★</p>
-    <p class="description">{{ product.description }}</p>
-    <button>加入購物車</button>
+      <div class="product-detail-card">
+        <div class="image-gallery">
+          <img :src="product.image" :alt="product.name" class="product-image">
+        </div>
+
+        <div class="product-info">
+          <div>
+            <span class="category-tag">{{ product.category }}</span>
+            <h1>{{ product.name }}</h1>
+            <p class="description">{{ product.description }}</p>
+          </div>
+          
+          <div class="purchase-section">
+            <p class="price">NT$ {{ product.price }}</p>
+            <div class="actions">
+              <div class="quantity-selector">
+                <label for="quantity">數量:</label>
+                <input type="number" id="quantity" v-model="quantity" min="1">
+              </div>
+              <button class="add-to-cart-btn">加入購物車</button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-  <div else>
-    <h2>找不到商品</h2>
-  </div>
-  
 </template>
+  
+
 
 <style scoped>
-.product-detail-container {
+.product-page-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.status-message {
+  text-align: center;
+  padding: 4rem 0;
+  color: #777;
+}
+.status-message.error {
+  color: #c62828;
+}
+
+.breadcrumb {
+  margin-bottom: 1.5rem;
+  color: #555;
+  font-size: 0.9rem;
+}
+.breadcrumb a {
+  color: var(--primary-color, #004d40);
+  text-decoration: none;
+}
+.breadcrumb a:hover {
+  text-decoration: underline;
+}
+.breadcrumb span {
+  margin: 0 0.5rem;
+}
+
+.product-detail-card {
   display: flex;
   gap: 2rem;
+  background-color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.image-gallery {
+  flex: 1 1 50%; /* 佔 50% 寬度 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .product-image {
-  max-width: 50%;
+  max-width: 100%;
+  max-height: 500px;
+  border-radius: 8px;
+  object-fit: cover;
 }
 
-/* 這裡加上一些基本的 CSS 讓網站看起來有模有樣 */
-/* 為了聚焦在 Vue，CSS 我就先簡單寫，你可以之後自己美化 */
-:root {
-  --primary-color: #004d40;
-  --secondary-color: #e0f2f1;
-  --text-color: #333;
-  --light-gray: #f5f5f5;
-}
-
-body {
-  font-family: 'Helvetica Neue', Arial, sans-serif;
-  margin: 0;
-  color: var(--text-color);
-  background-color: var(--light-gray);
-}
-
-#app-container {
+.product-info {
+  flex: 1 1 50%; /* 佔 50% 寬度 */
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  justify-content: space-between; /* 讓價格和按鈕區塊能往下推 */
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 2rem;
-  background-color: white;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+.category-tag {
+  display: inline-block;
+  background-color: var(--secondary-color, #e0f2f1);
+  color: var(--primary-color, #004d40);
+  padding: 0.25rem 0.75rem;
+  border-radius: 99px; /* 藥丸形狀 */
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
 }
 
-.logo { font-size: 1.5rem; font-weight: bold; color: var(--primary-color); }
-.search-bar input { width: 300px; padding: 0.5rem; border-radius: 5px; border: 1px solid #ccc; }
-.user-actions span { margin-left: 1.5rem; cursor: pointer; }
-
-.main-content {
-  display: flex;
-  flex-grow: 1;
-  padding: 2rem;
+h1 {
+  font-size: 2.2rem;
+  margin: 0.5rem 0 1rem;
+  line-height: 1.2;
 }
 
-.sidebar {
-  flex: 0 0 200px; /* 不會長大、不會縮小、基礎寬度200px */
-  background-color: white;
-  padding: 1rem;
-  border-radius: 8px;
-  margin-right: 2rem;
-}
-.sidebar h3 { margin-top: 0; }
-.sidebar ul { list-style: none; padding: 0; }
-.sidebar li { padding: 0.75rem; cursor: pointer; border-radius: 5px; }
-.sidebar li:hover { background-color: var(--secondary-color); }
-.sidebar li.active { background-color: var(--primary-color); color: white; font-weight: bold; }
-
-.products-section {
-  flex-grow: 1;
-}
-.promo-slider img { width: 100%; border-radius: 8px; }
-.products-section h2 { margin-top: 2rem; }
-
-.product-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 1.5rem;
+.description {
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 2rem;
 }
 
-.product-card {
-  background-color: white;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  padding: 1rem;
-  text-align: center;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-  transition: transform 0.2s;
-}
-.product-card:hover { transform: translateY(-5px); }
-.product-card img { max-width: 100%; height: auto; margin-bottom: 1rem; }
-.product-card h3 { font-size: 1.1rem; margin: 0.5rem 0; }
-.product-price { font-weight: bold; color: var(--primary-color); }
-.product-card button {
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 5px;
-  cursor: pointer;
+.purchase-section {
+  border-top: 1px solid #eee;
+  padding-top: 1.5rem;
   margin-top: 1rem;
 }
 
-.no-products { margin-top: 2rem; text-align: center; color: #777; }
-
-.reviews-section { margin-top: 3rem; }
-.review-grid { display: flex; gap: 1.5rem; }
-.review-card { flex: 1; background-color: white; padding: 1rem; border-radius: 8px; }
-
-.footer {
-  text-align: center;
-  padding: 1.5rem;
-  background-color: #333;
-  color: white;
+.price {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--primary-color, #004d40);
+  margin: 0 0 1.5rem;
 }
 
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
 
+.quantity-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.quantity-selector input {
+  width: 50px;
+  padding: 0.5rem;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
 
+.add-to-cart-btn {
+  background-color: var(--primary-color, #004d40);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: background-color 0.2s, transform 0.1s;
+}
+.add-to-cart-btn:hover {
+  background-color: #00695c;
+  transform: scale(1.02);
+}
+
+/* --- RWD --- */
+@media (max-width: 768px) {
+  .product-detail-card {
+    flex-direction: column;
+    padding: 1.5rem;
+  }
+  h1 {
+    font-size: 1.8rem;
+  }
+  .price {
+    font-size: 1.75rem;
+  }
+}
 </style>

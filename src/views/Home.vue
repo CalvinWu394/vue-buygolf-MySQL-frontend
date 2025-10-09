@@ -77,7 +77,7 @@ try{
   });
   })   
    // 現在，products 陣列裡面的資料就是乾淨漂亮的了！
-  console.log("處理完成的產品資料:", newArray);
+  //console.log("處理完成的產品資料:", newArray);
 
   // 最後，你可以把這個乾淨的 products 陣列，賦值給你的 ref 變數，讓畫面去渲染
   all.value = newArray;
@@ -146,7 +146,7 @@ const specialProducts = computed(() => {
 
 const filteredProducts = computed(() => {
 let tempProducts = all.value;  //先拿出原始商品列表
-  
+  console.log(all.value);
 // 1. 根據分類過濾
 if (selectedCategory.value !== '全部') {
   tempProducts = tempProducts.filter(pp => pp.category === selectedCategory.value);

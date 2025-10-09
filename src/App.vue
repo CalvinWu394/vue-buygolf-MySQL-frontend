@@ -19,7 +19,7 @@ const showSearch = computed(() => {
   <div id="app-container">
     <header class="header">
       <div class="logo">
-        <RouterLink to="/">高爾夫球具商城</RouterLink>
+        <RouterLink to="/">Happy Golf Market</RouterLink>
       </div>
       
       <div class="user-actions">
