@@ -1,15 +1,17 @@
 <script setup>
 import { RouterLink, RouterView } from "vue-router";
-//從我們剛剛建立的 cart.js 檔案中，引入 useCartStore 這個函式
+import { computed } from 'vue';
+//從建立的 cart.js 檔案中，引入 useCartStore 這個函式
 import{ useCartStore } from "./stores/cart.js";
 
 //呼叫函式來取得購物車 store 的遙控器；
 const cartStore = useCartStore();
 
-
-// 或是如果你打算在 App.vue 實作全站搜尋，可以保留它；
-import { ref } from 'vue';
-const searchTerm = ref('');
+/*建立一個計算屬性，用來判斷是否應該顯示搜尋列；
+const showSearch = computed(() => {
+  console.log(route.name)
+  return route.name ==="Home"
+});*/
 
 </script>
 
@@ -19,17 +21,15 @@ const searchTerm = ref('');
       <div class="logo">
         <RouterLink to="/">高爾夫球具商城</RouterLink>
       </div>
-      <div class="search-bar">
-        <input type="text" v-model="searchTerm" placeholder="搜尋商品名稱...">
-      </div>
+      
       <div class="user-actions">
-        <RouterLink to="/Login">會員登入</RouterLink>
-        <span>購物車 ({{ cartStore.cartCount }})</span>
+        <RouterLink to="/login">會員登入</RouterLink>
+        <RouterLink to="/cart">購物車 ({{ cartStore.cartCount }})</RouterLink>
       </div>
     </header>
 
     <main class="main-content">
-      <RouterView />
+      <RouterView />      <!-- 其隨著 <router-link> 的路徑切換，負責顯示出匹配當前路徑的元件內容 -->
     </main>
 
     <footer class="footer">
@@ -40,7 +40,7 @@ const searchTerm = ref('');
 </template>
 
 <style>
-/* src/App.vue */
+
 
 /* --- 全域樣式 --- */
 :root {
@@ -94,15 +94,6 @@ body {
   flex-grow: 1;
   padding: 2rem;
 }
-
-
-.search-bar input {
-  width: 300px;
-  padding: 0.5rem;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-}
-
 
 
 .footer {
