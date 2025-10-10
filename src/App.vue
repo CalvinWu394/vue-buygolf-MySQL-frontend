@@ -16,6 +16,7 @@ const showSearch = computed(() => {
 </script>
 
 <template>
+  <span> 測試測試 </span>
   <div id="app-container">
     <header class="header">
       <div class="logo">
