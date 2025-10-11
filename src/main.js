@@ -10,9 +10,9 @@ const pinia = createPinia();
 
 // 透過 .use() 方法告訴 Vue App 我們要使用 Pinia；
 app.use(pinia);
+
 // 也要告訴 Vue App 我們要使用 router；
 app.use(router);
-
 
 // 最後才掛載到index.html
 app.mount('#app');

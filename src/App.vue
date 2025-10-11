@@ -7,20 +7,19 @@ import{ useCartStore } from "./stores/cart.js";
 //呼叫函式來取得購物車 store 的遙控器；
 const cartStore = useCartStore();
 
-/*建立一個計算屬性，用來判斷是否應該顯示搜尋列；
+//建立一個計算屬性，用來判斷是否應該顯示搜尋列；
 const showSearch = computed(() => {
   console.log(route.name)
   return route.name ==="Home"
-});*/
+});
 
 </script>
 
 <template>
-  <span> 測試測試 </span>
   <div id="app-container">
     <header class="header">
       <div class="logo">
-        <RouterLink to="/">Happy Golf Market</RouterLink>
+        <RouterLink to="/">G Zone</RouterLink>
       </div>
       
       <div class="user-actions">

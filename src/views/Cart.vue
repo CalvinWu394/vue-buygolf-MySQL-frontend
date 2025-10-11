@@ -11,7 +11,7 @@ const cartStore = useCartStore();
 
 
 //計算購物車商品加總
-// 當 cartStore.cart 陣列的內容改變時，total 的值會自動重新計算
+//當 cartStore.cart 陣列的內容改變時，total 的值會自動重新計算
 //.reduce() 回傳的值便是累加器迭代完整個陣列的結果
 //product才能使用.price該屬性
 // 0 是初始值
@@ -21,8 +21,8 @@ const total = computed(function() {
     }, 0);
 })
 
-
 </script>
+
 
 
 <template>

@@ -38,9 +38,9 @@ const errorMsg = ref(''); // 如果發生錯誤，顯示的錯誤訊息；
 
 // 【新增】準備要放在輪播圖上的圖片陣列
 const carouselImages = ref([
-  { id: 1, url: 'https://shop.r10s.jp/taylormadegolf/cabinet/bunner/imgrc0150982674.jpg' },
-  { id: 2, url: 'https://shop.r10s.jp/callawaygolf/cabinet/imgrc0142847302.jpg?v=1760022301557' },
-  { id: 3, url: 'https://tshop.r10s.jp/r-golf/cabinet/11947947/imgrc0130022650.jpg?fitin=768%3A432' }
+  { id: 1, url: 'https://cdn.prod.website-files.com/63123e39cc4e82aeb1446c5c/6787b358ba25a331c72c7218_g440-driver_engineering.jpg' },
+  { id: 2, url: 'https://callaway.com.tw/cdn/shop/files/2509_CALLAWAY_PARADYM_02_TW_1920x900_WEB.jpg?v=1759991773&width=3000' },
+  { id: 3, url: 'https://sunshinegolf.com.tw/image/images/TM24BAL-SpeedSoft-Ink-Family-9303-Powder-v1~W1200_H900_Mcrop_CZ1_P50-50.jpg' }
 ]);
 
 
@@ -180,7 +180,8 @@ const selectCategory = (category) =>{
     <p>載入中，請稍候...</p>
   </div>
 
-  <div v-else-if="errorMsg" class="status-message error"> <p>{{ errorMsg }}</p>
+  <div v-else-if="errorMsg" class="status-message error"> 
+    <p>{{ errorMsg }}</p>
   </div>
 
   <div v-else class="home-layout">
@@ -216,10 +217,10 @@ const selectCategory = (category) =>{
     </aside>
 
     <section class="products-section">
-      <Carousel :autoplay="3000" :wrap-around="true">
+      <Carousel :autoplay="3500" :wrap-around="true">
         <Slide v-for="image in carouselImages" :key="image.id">
           <div class="carousel__item">
-            <img :src="image.url" alt="促銷廣告">
+            <img :src="image.url" alt="廣告橫幅">
           </div>
         </Slide>
 
@@ -263,7 +264,8 @@ const selectCategory = (category) =>{
           <div class="review-card">"網站好用，會再回購。" - 王先生</div>
         </div>
       </div>
-    </section> </div>
+    </section> 
+  </div>
 </template>
 
 
@@ -279,7 +281,7 @@ const selectCategory = (category) =>{
   border-radius: 8px;
   overflow: hidden; /* 確保圖片不會超出圓角範圍 */
 }
-.carousel__item img {
+.carousel__item img {    /*找到被包在.carousel__item裡面的<img>圖片*/
   width: 100%;
   height: 100%;
   object-fit: cover; /* 讓圖片填滿容器，但保持比例，多餘部分會被裁切 */
