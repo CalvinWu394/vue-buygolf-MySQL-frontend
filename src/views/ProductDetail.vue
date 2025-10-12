@@ -4,11 +4,19 @@ import { doc, getDoc } from "firebase/firestore"; // 引入抓取單一文件的
 import { db } from "../firebase/config.js";
 import { useRoute } from "vue-router";
 
-const route = useRoute(); // 取得 route 物件
+//從建立的 cart.js 檔案中，引入 useCartStore 這個函式
+import{ useCartStore } from "../stores/cart.js";
+
+const route = useRoute();  // 取得 route 物件
 const product = ref(null); // 用來存放單一商品資料
 const loading = ref(true); // 載入狀態
 const errorMsg = ref("");
 const quantity = ref(1);
+
+//呼叫 useCartStore() 來取得購物車 store 的實例
+//你可以把 cartStore 想像成是通往「購物車倉庫」的遙控器
+const cartStore = useCartStore();
+
 
 // 從網址參數中取得商品 ID
 const productId = route.params.id;
@@ -34,7 +42,7 @@ try{
       price: openData.price,
       image: openData.image,
       rating: openData.rating,
-      description: openData.description
+      description: openData.description,
     }
   }
   else {
@@ -58,6 +66,19 @@ try{
 onMounted(() => {
   fetchData();
 })
+
+// 加入購物車的處理函式
+function checkCart(){
+ /*檢查庫存
+ if (quantity.value > product.value.stock){
+  alert("庫存不足");
+  return;
+ }*/
+ cartStore.addToCart(product.value, quantity.value);
+};
+
+
+
 
 
 /*const get = async function(){
@@ -114,7 +135,7 @@ onMounted(() => {
     <div v-else-if="product">
       <nav class="breadcrumb">
         <!-- <RouterLink to="/">首頁</RouterLink>  -->
-        <span>{{ product.category }}</span> 
+        <span>{{ product.category }} >></span> 
         <span>{{ product.name }}</span>
       </nav>
 
@@ -137,7 +158,7 @@ onMounted(() => {
                 <label for="quantity">數量:</label>
                 <input type="number" id="quantity" v-model="quantity" min="1">
               </div>
-              <button class="add-to-cart-btn">加入購物車</button>
+              <button @click.prevent="checkCart" class="add-to-cart-btn">加入購物車</button>
             </div>
           </div>
         </div>
@@ -149,6 +170,14 @@ onMounted(() => {
 
 
 <style scoped>
+
+.stock-info {
+  font-size: 0.9rem;
+  color: #757575;
+  margin-top: 1rem;
+}
+
+
 .product-page-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -227,6 +256,7 @@ h1 {
 }
 
 .description {
+  
   color: #555;
   line-height: 1.6;
   margin-bottom: 2rem;

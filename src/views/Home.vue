@@ -8,12 +8,6 @@ import { RouterLink } from "vue-router";
 import 'vue3-carousel/dist/carousel.css'; // 引入輪播圖的基本 CSS 樣式
 import { Carousel, Slide, Pagination, Navigation } from 'vue3-carousel';
 
-//從建立的 cart.js 檔案中，引入 useCartStore 這個函式
-import{ useCartStore } from "../stores/cart.js";
-
-//呼叫 useCartStore() 來取得購物車 store 的實例；
-//你可以把 cartStore 想像成是通往「購物車倉庫」的遙控器；
-const cartStore = useCartStore();
 
 const all = ref([]);  //用來存放從 Firebase 拿到的「所有」商品資料
 
@@ -73,7 +67,8 @@ try{
           price: productData.price,
           image: productData.image,
           rating: productData.rating,
-          description: productData.description
+          description: productData.description,
+          
   });
   })   
    // 現在，products 陣列裡面的資料就是乾淨漂亮的了！
@@ -231,7 +226,7 @@ const selectCategory = (category) =>{
       </Carousel>
 
       <div class="search-bar-local">
-        <input type="text" v-model="searchTerm" placeholder="搜尋商品名稱...">
+        <input type="text" v-model="userSearch" placeholder="搜尋商品名稱...">
       </div>
 
       <h2 class="all-products-title">商品列表</h2>
@@ -247,7 +242,6 @@ const selectCategory = (category) =>{
             <h3>{{ product.name }}</h3>
             <p class="product-price">NT$ {{ product.price }}</p>
             <p class="product-rating">評價: {{ product.rating }} ★</p>
-            <button @click.prevent="cartStore.addToCart(product)">加入購物車</button>
           </div>
         </RouterLink>
       </div>
@@ -388,7 +382,7 @@ const selectCategory = (category) =>{
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 1.5rem;
 }
-.product-card-link { text-decoration: none; color: inherit; }
+
 .product-card {
   background-color: white;
   border: 1px solid #eee;
@@ -396,7 +390,8 @@ const selectCategory = (category) =>{
   padding: 1rem;
   text-align: center;
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-  transition: transform 0.2s, box-shadow 0.2s;
+  /*transition: transform 0.2s, box-shadow 0.2s;*/
+  transition: transform 0.2s;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -404,16 +399,36 @@ const selectCategory = (category) =>{
 }
 .product-card:hover { 
   transform: translateY(-5px); 
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  /*box-shadow: 0 4px 12px rgba(0,0,0,0.1);*/
 }
+.product-card-link { 
+  text-decoration: none; 
+  color: inherit; 
+}
+
 .product-card img {
   max-width: 100%;
   margin-bottom: 1rem;
-  height: 180px;
+  /*height: 180px;*/
+  height: 200px;
   object-fit: cover;
 }
-.product-card h3 { font-size: 1.1rem; margin: 0.5rem 0; flex-grow: 1; }
-.product-price { font-weight: bold; color: var(--primary-color); }
+.product-card h3 { 
+  font-size: 1.1rem; 
+  margin: 0.5rem 0; 
+  flex-grow: 1; 
+}
+.product-price { 
+  font-size: 1.5rem;
+  font-weight: bold; 
+  color: var(--primary-color); 
+}
+
+/* 調整 p 標籤預設的 margin */
+.product-price, .product-rating {
+    margin: 0; /* 移除上下邊距，讓它們更靠近 */
+}
+
 .product-card button {
   background-color: var(--primary-color);
   color: white;
@@ -422,7 +437,7 @@ const selectCategory = (category) =>{
   border-radius: 5px;
   cursor: pointer;
   margin-top: 1rem;
-  width: 100%;
+  /*width: 100%;*/
 }
 
 .no-products, .status-message {

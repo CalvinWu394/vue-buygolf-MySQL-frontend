@@ -1,26 +1,10 @@
 <script setup>
-// 從 vue 引入 computed，它可以用來建立一個「會自動計算的」響應式資料；
-import { computed } from 'vue';
 // 從我們建立的 cart.js 檔案中，引入 useCartStore 這個函式；
 import { useCartStore } from "../stores/cart.js";
-
 
 // 呼叫 useCartStore() 來取得購物車 store 的實例 (或稱「遙控器」)；
 // 之後我們就可以透過 cartStore 來存取購物車的狀態和方法；
 const cartStore = useCartStore();
-
-
-//計算購物車商品加總
-//當 cartStore.cart 陣列的內容改變時，total 的值會自動重新計算
-//.reduce() 回傳的值便是累加器迭代完整個陣列的結果
-//product才能使用.price該屬性
-// 0 是初始值
-const total = computed(function() {
-    return cartStore.cart.reduce(function(sum, product) {
-      return sum + product.price;
-    }, 0);
-})
-
 </script>
 
 
@@ -40,14 +24,15 @@ const total = computed(function() {
           <div class="item-details">
             <h3>{{ product.name }}</h3>
             <p>NT$ {{ product.price }}</p>
+            <p>數量： {{ product.quantity }}</p>
           </div>
           <button @click="cartStore.removeFromCart(product.firestoreId)" class="remove-btn">移除</button>
         </div>
       </div>
 
       <div class="cart-summary">
-        <h2>總計: NT$ {{ total }}</h2>
-        <button class="checkout-btn">前往結帳</button>
+        <h2>總計: NT$ {{ cartStore.totalPrice }}</h2>
+        <button onclick="alert('系統建置中')" class="checkout-btn">前往結帳</button>
       </div>
     </div>
   </div>
