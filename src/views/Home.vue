@@ -165,8 +165,6 @@ const selectCategory = (category) =>{
   selectedCategory.value = category;  // 更新 selectedCategory 的值
 };
 
-
-
 </script>
 
   
@@ -380,7 +378,7 @@ const selectCategory = (category) =>{
 .product-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1.5rem;
+  gap: 2.5rem;
 }
 
 .product-card {
