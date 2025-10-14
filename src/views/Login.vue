@@ -1,21 +1,44 @@
 <script setup>
+//建立響應式變數
 import { ref } from 'vue';
+//從 'vue-router' 引入 useRouter，我們需要它來在登入成功後跳轉頁面；
+import { useRouter } from 'vue-router';
+// 引入我們建立的 useUserStore；
+import { useUserStore } from '../stores/user.js';
 
 // 為了示範 v-model，我們加上 ref
+const username = ref('');
 const email = ref('');
 const password = ref('');
+const router = useRouter();
+const useStore = useUserStore();
 
-const handleLogin = () => {
-  // 這裡可以放登入的邏輯
-  alert(`Email: ${email.value}\n密碼: ${password.value}`);
-};
+// 處理登入邏輯的函式
+// 把它改成 async 函式，因為我們要呼叫非同步的 login action
+const userLogin = async () => {
+  // 呼叫 userStore 中的 login 動作，並傳入使用者輸入的username、email、password
+  // await 會等到 login 函式執行完畢 (無論成功或失敗)
+  const success = await useStore.login(username.value, email.value, password.value);
+  if(success){
+    // 如果成功，就跳出提示訊息
+    alert('登入成功！歡迎回來！');
+    router.push('/');
+  }else{
+    // 如果失敗，就跳出錯誤訊息
+    alert('Email 或密碼錯誤，請重新輸入。');
+  }
+  }
 </script>
 
 <template>
   <div class="login-container">
     <div class="login-box">
       <h2>會員登入</h2>
-      <form @submit.prevent="handleLogin">
+      <form @submit.prevent="userLogin">
+        <div class="form-group">
+          <label for="username">使用者名稱</label>
+          <input type="text" id="username" v-model="username" required placeholder="請輸入您的名稱">
+        </div>
         <div class="form-group">
           <label for="email">電子郵件</label>
           <input type="email" id="email" v-model="email" required placeholder="請輸入您的 Email">
@@ -24,8 +47,10 @@ const handleLogin = () => {
           <label for="password">密碼</label>
           <input type="password" id="password" v-model="password" required placeholder="請輸入您的密碼">
         </div>
+
         <button type="submit">登入</button>
-        <button type="submit">申請會員</button>
+        
+        <RouterLink to="/register" class="register-link">申請會員</RouterLink>
       </form>
     </div>
   </div>
@@ -72,6 +97,7 @@ label {
   color: #555;
 }
 
+input[type="text"],
 input[type="email"],
 input[type="password"] {
   width: 100%; /* 寬度填滿容器 */
@@ -84,6 +110,7 @@ input[type="password"] {
 }
 
 /* 當使用者點擊輸入框時的樣式 */
+input[type="text"]:focus,
 input[type="email"]:focus,
 input[type="password"]:focus {
   outline: none; /* 移除預設的藍色外框 */
@@ -112,5 +139,20 @@ button:hover {
 /* 點擊按鈕時的樣式 */
 button:active {
   transform: scale(0.98); /* 讓按鈕有被按下去的感覺 */
+}
+
+
+.link-container {
+  margin-top: 1.5rem; /* 和上方登入按鈕的間距 */
+}
+
+.register-link {
+  color: var(--primary-color); /* 連結文字顏色使用主題色 */
+  text-decoration: none; /* 移除底線 */
+  font-weight: 500;
+}
+
+.register-link:hover {
+  text-decoration: underline; /* 滑鼠移上去時才顯示底線 */
 }
 </style>

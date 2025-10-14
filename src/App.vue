@@ -1,17 +1,14 @@
 <script setup>
-import { RouterLink, RouterView } from "vue-router";
-import { computed } from 'vue';
 //從建立的 cart.js 檔案中，引入 useCartStore 這個函式
-import{ useCartStore } from "./stores/cart.js";
+import { useCartStore } from "./stores/cart.js";
+import { useUserStore } from './stores/user.js';
 
-//呼叫函式來取得購物車 store 的遙控器；
+//呼叫函式來取得 store 的遙控器；
 const cartStore = useCartStore();
+const userStore = useUserStore();
 
-//建立一個計算屬性，用來判斷是否應該顯示搜尋列；
-const showSearch = computed(() => {
-  console.log(route.name)
-  return route.name ==="Home"
-});
+
+
 
 </script>
 
@@ -19,11 +16,20 @@ const showSearch = computed(() => {
   <div id="app-container">
     <header class="header">
       <div class="logo">
-        <RouterLink to="/">G Zone</RouterLink>
+        <RouterLink to="/">G Zone</RouterLink>   <!-- 不需要再次import,因為在main.js透過 app.use(router)已經有宣告為全域 -->
       </div>
       
       <div class="user-actions">
+        <template v-if="!userStore.isLoggedIn">
         <RouterLink to="/login">會員登入</RouterLink>
+        </template>
+
+        <template v-else>
+          <span class="welcome-message">歡迎您, {{ userStore.userInformation.email }}</span>
+        </template>
+
+
+
         <RouterLink to="/cart">購物車 ({{ cartStore.cartCount }})</RouterLink>
       </div>
     </header>
@@ -40,6 +46,12 @@ const showSearch = computed(() => {
 </template>
 
 <style>
+
+.welcome-message {
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
 
 
 /* --- 全域樣式 --- */

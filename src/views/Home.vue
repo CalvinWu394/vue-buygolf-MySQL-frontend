@@ -2,8 +2,7 @@
 // onMounted: 這是一個「生命週期鉤子」。它會在元件成功掛載到畫面上「之後」執行裡面的程式碼，非常適合用來發送網路請求去要資料。
 // computed: 用來建立「計算屬性」。它會根據一個或多個響應式資料，計算出一個新的值。當依賴的資料改變時，它會自動重新計算。
 import { ref, onMounted, computed } from "vue";
-import { RouterLink } from "vue-router";
-// 【新增】從剛剛安裝的套件中，引入輪播圖需要的元件；
+//【新增】從剛剛安裝的套件中，引入輪播圖需要的元件；
 import 'vue3-carousel/dist/carousel.css'; // 引入輪播圖的基本 CSS 樣式
 import { Carousel, Slide, Pagination, Navigation } from 'vue3-carousel';
 //import { collection, getDocs } from "firebase/firestore";
@@ -243,7 +242,8 @@ const selectCategory = (category) =>{
 
       <h2 class="all-products-title">商品列表</h2>
       <div class="product-grid">
-        <RouterLink
+        <!-- 不需要再次import,因為在main.js透過 app.use(router)已經有宣告為全域 -->
+        <RouterLink                        
           v-for="product in filteredProducts"
           :key="product.firestoreId"
           :to="`/product/${product.firestoreId}`"

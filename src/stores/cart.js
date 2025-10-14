@@ -29,7 +29,7 @@ const addToCart = (product, quantity = 1 ) => {
     if(existProduct){
       existProduct.quantity = existProduct.quantity + quantity;
     }else{ 
-      cart.value.push({ ...product, quantity: quantity });  //展開語法 (...) ,建立複製品並擴充它
+      cart.value.push({ ...product, quantity: quantity });  //展開語法 (...) ,建立複製品並新增quantity這個物件
         
     }
     alert(`將 ${quantity} 個添加至購物車`);

@@ -10,6 +10,7 @@ import Home from "../views/Home.vue";
 import ProductDetail from "../views/ProductDetail.vue";
 import Login from "../views/Login.vue";
 import Cart from '../views/Cart.vue';
+import Register from '../views/Register.vue';
 
 // 定義我們的路由規則
 const rt = [
@@ -29,6 +30,13 @@ const rt = [
         name: "Login",
         component: Login
     },
+    
+    {
+        path: "/register",
+        name: "Register",
+        component: Register
+    },
+
     {
         path: "/cart",
         name: "Cart",
