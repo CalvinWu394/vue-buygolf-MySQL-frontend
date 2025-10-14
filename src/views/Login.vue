@@ -25,6 +25,7 @@ const handleLogin = () => {
           <input type="password" id="password" v-model="password" required placeholder="請輸入您的密碼">
         </div>
         <button type="submit">登入</button>
+        <button type="submit">申請會員</button>
       </form>
     </div>
   </div>

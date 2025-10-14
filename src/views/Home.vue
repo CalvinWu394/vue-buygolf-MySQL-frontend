@@ -1,15 +1,17 @@
 <script setup>
+// onMounted: 這是一個「生命週期鉤子」。它會在元件成功掛載到畫面上「之後」執行裡面的程式碼，非常適合用來發送網路請求去要資料。
+// computed: 用來建立「計算屬性」。它會根據一個或多個響應式資料，計算出一個新的值。當依賴的資料改變時，它會自動重新計算。
 import { ref, onMounted, computed } from "vue";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "../firebase/config.js";
 import { RouterLink } from "vue-router";
-
 // 【新增】從剛剛安裝的套件中，引入輪播圖需要的元件；
 import 'vue3-carousel/dist/carousel.css'; // 引入輪播圖的基本 CSS 樣式
 import { Carousel, Slide, Pagination, Navigation } from 'vue3-carousel';
+//import { collection, getDocs } from "firebase/firestore";
+//import { db } from "../firebase/config.js";
 
+import axios from "axios";
 
-const all = ref([]);  //用來存放從 Firebase 拿到的「所有」商品資料
+const all = ref([]);  //用來存放從 MySQL 拿到的「所有」商品資料
 
 //存放不重複商品分類
 const categories = ref([
@@ -24,12 +26,9 @@ const categories = ref([
 ]);  
 
 const selectedCategory = ref('全部');  //目前選擇的商品分類
-
 const userSearch = ref('');   //存放使用者輸入文字
-
 const loading = ref(true); // 頁面是否在載入中；
 const errorMsg = ref(''); // 如果發生錯誤，顯示的錯誤訊息；
-
 // 【新增】準備要放在輪播圖上的圖片陣列
 const carouselImages = ref([
   { id: 1, url: 'https://cdn.prod.website-files.com/63123e39cc4e82aeb1446c5c/6787b358ba25a331c72c7218_g440-driver_engineering.jpg' },
@@ -37,11 +36,29 @@ const carouselImages = ref([
   { id: 3, url: 'https://sunshinegolf.com.tw/image/images/TM24BAL-SpeedSoft-Ink-Family-9303-Powder-v1~W1200_H900_Mcrop_CZ1_P50-50.jpg' }
 ]);
 
+const axiosData = async () =>{
+  try{
+    //使用 axios.get() 來發送請求
+    const response = await axios.get('http://localhost:3000/api/product');
+    //直接從 response.data 取出後端回傳的資料，axios 已自動幫我們轉成 JSON
+    all.value = response.data;
+    console.log(response.data);
 
+  }catch(error){
+    console.error("讀取 API 資料時發生錯誤:", error);
+    errorMsg.value = '載入資料時發生問題，請稍後再試';
+  }finally{
+    loading.value = false;
+  }
+};
+
+onMounted(() => {
+  axiosData();
+})
 
 
 //等待onMounted()來呼叫連接資料庫
-const fetchData = async () => {
+/*const fetchData = async () => {
 try{ 
   const querySnapshot = await getDocs(collection(db, "allProducts"));
 
@@ -72,7 +89,7 @@ try{
   });
   })   
    // 現在，products 陣列裡面的資料就是乾淨漂亮的了！
-  //console.log("處理完成的產品資料:", newArray);
+  console.log("處理完成的產品資料:", newArray);
 
   // 最後，你可以把這個乾淨的 products 陣列，賦值給你的 ref 變數，讓畫面去渲染
   all.value = newArray;
@@ -89,10 +106,7 @@ try{
 
 onMounted(() => {
   fetchData();
-})
-
-
-
+})*/
 
 
 /*const get = async function(){
@@ -127,13 +141,14 @@ onMounted(() => {
     }catch(error){
       console.error("讀取 Firebase 資料時發生錯誤:", error);
     }
-  }*/
+  }
 
 // 元件掛載在網頁上後，執行 get 函式去載入資料
-/*onMounted(()=>{
+onMounted(()=>{
   get();
 })*/
 
+//左邊熱賣商品
 const specialProducts = computed(() => {
   return all.value.slice(1, 4); // .slice(1, 4) 從索引 1 取到 4 之前，共 3 個
 });
@@ -141,7 +156,6 @@ const specialProducts = computed(() => {
 
 const filteredProducts = computed(() => {
 let tempProducts = all.value;  //先拿出原始商品列表
-  console.log(all.value);
 // 1. 根據分類過濾
 if (selectedCategory.value !== '全部') {
   tempProducts = tempProducts.filter(pp => pp.category === selectedCategory.value);

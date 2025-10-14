@@ -1,14 +1,17 @@
 <script setup>
 import { ref, onMounted } from "vue";
-import { doc, getDoc } from "firebase/firestore"; // 引入抓取單一文件的方法
-import { db } from "../firebase/config.js";
-import { useRoute } from "vue-router";
+// 引入抓取單一文件的方法
+//import { doc, getDoc, getDocs } from "firebase/firestore"; 
+//import { db } from "../firebase/config.js";
 
+import { useRoute } from "vue-router";
 //從建立的 cart.js 檔案中，引入 useCartStore 這個函式
 import{ useCartStore } from "../stores/cart.js";
 
+import axios from "axios";
+
 const route = useRoute();  // 取得 route 物件
-const product = ref(null); // 用來存放單一商品資料
+const oneProduct = ref(null); // 用來存放單一商品資料
 const loading = ref(true); // 載入狀態
 const errorMsg = ref("");
 const quantity = ref(1);
@@ -18,19 +21,31 @@ const quantity = ref(1);
 const cartStore = useCartStore();
 
 
-// 從網址參數中取得商品 ID
+//從網址參數中取得商品 ID
+//瀏覽 /product/abc，那麼 route.params.id 的值就是 "abc"
 const productId = route.params.id;
 console.log(route.params.id);
 
-/*const all = ref([]);
-const categories = ref([]);
-const selectedCategory = ref('全部');
-const search = ref('');
-const cart = ref([]);
-categories.value = ["全部","高爾夫球","球具","配件"];*/
+const axiosData = async () =>{
+  try{
+    const response = await axios.get(`http://localhost:3000/api/product/${productId}`);
+    oneProduct.value  = response.data;
+  }catch(error){
+    console.error(error);
+    console.error(error.response);
+    console.error(error.response.status);
+  }finally{
+    loading.value = false;
+  }
+};
+
+onMounted(() => {
+  axiosData();
+})
+
 
 //等待onMounted()來呼叫連接資料庫
-const fetchData = async () => {
+/*const fetchData = async () => {
 try{
   const docSnap = await getDoc(doc(db, "allProducts", productId));
   if (docSnap.exists()) {
@@ -65,7 +80,7 @@ try{
 
 onMounted(() => {
   fetchData();
-})
+})*/
 
 // 加入購物車的處理函式
 function checkCart(){
@@ -74,51 +89,8 @@ function checkCart(){
   alert("庫存不足");
   return;
  }*/
- cartStore.addToCart(product.value, quantity.value);
+ cartStore.addToCart(oneProduct.value, quantity.value);
 };
-
-
-
-
-
-/*const get = async function(){
-    try{
-      // 告訴 Firebase 我們要去讀取 'products' 這個集合的所有文件
-      const getData = await getDocs(collection(db, "allProducts"));
-      console.log(getData.docs);
-      // 直接使用 map() 處理 querySnapshot.docs 陣列
-      // map() 會自動產生一個新陣列，我們直接把它存入 ref
-      all.value = getData.docs.map(dd =>{
-        return{
-          id: dd.id,
-          name: dd.name,
-          category: dd.category,
-          price: dd.price,
-          image: dd.image,
-          rating: dd.rating,
-          description: dd.description
-        }
-      });
-      
-      const uniqueCategories = ["全部"]
-      //使用 for...of 迴圈可以印出陣列的值
-      for(const pp of all.value){
-        //檢查 uniqueCategories 陣列是否「不包含」目前這個商品的分類
-        //如果不包含，就把這個新的分類加進去
-        if (!uniqueCategories.includes(pp.category)){
-          uniqueCategories.push(pp.category);
-        }
-      }
-        categories.value = uniqueCategories;
-    }catch(error){
-      console.error("讀取 Firebase 資料時發生錯誤:", error);
-    }
-  }*/
-
-// 元件掛載在網頁上後，執行 get 函式去載入資料
-/*onMounted(()=>{
-  get();
-})*/
 
 
 </script>
@@ -126,33 +98,33 @@ function checkCart(){
 
 
   <template>
-  <!-- 這邊的v-if是用來等待時間差，讓Firebase把資料塞進product  -->
+  <!-- 這邊的v-if是用來等待時間差，讓MySQL把資料塞進product  -->
   <div class="product-page-container">
     <div v-if="loading" class="status-message">載入中...</div>   
     
     <div v-else-if="errorMsg" class="status-message error">{{ errorMsg }}</div>
     
-    <div v-else-if="product">
+    <div v-else-if="oneProduct">
       <nav class="breadcrumb">
         <!-- <RouterLink to="/">首頁</RouterLink>  -->
-        <span>{{ product.category }} >></span> 
-        <span>{{ product.name }}</span>
+        <span>{{ oneProduct.category }} >></span> 
+        <span>{{ oneProduct.name }}</span>
       </nav>
 
       <div class="product-detail-card">
         <div class="image-gallery">
-          <img :src="product.image" :alt="product.name" class="product-image">
+          <img :src="oneProduct.image" :alt="oneProduct.name" class="product-image">
         </div>
 
         <div class="product-info">
           <div>
-            <span class="category-tag">{{ product.category }}</span>
-            <h1>{{ product.name }}</h1>
-            <p class="description">{{ product.description }}</p>
+            <span class="category-tag">{{ oneProduct.category }}</span>
+            <h1>{{ oneProduct.name }}</h1>
+            <p class="description">{{ oneProduct.description }}</p>
           </div>
           
           <div class="purchase-section">
-            <p class="price">NT$ {{ product.price }}</p>
+            <p class="price">NT$ {{ oneProduct.price }}</p>
             <div class="actions">
               <div class="quantity-selector">
                 <label for="quantity">數量:</label>
