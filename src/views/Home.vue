@@ -41,7 +41,7 @@ const axiosData = async () =>{
     const response = await axios.get('http://localhost:3000/api/product');
     //直接從 response.data 取出後端回傳的資料，axios 已自動幫我們轉成 JSON
     all.value = response.data;
-    console.log(response.data);
+    //console.log(response.data);
 
   }catch(error){
     console.error("讀取 API 資料時發生錯誤:", error);

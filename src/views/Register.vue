@@ -19,6 +19,7 @@ const axiosRegister = async () => {
 
     try{
     const response = await axios.post('http://localhost:3000/api/register', all);
+    //印出 response 接收回來的格式是由 axios 打包好的JavaScript 物件 (Object)
     console.log(response.data);
     alert('註冊成功！');   
     

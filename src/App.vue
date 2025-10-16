@@ -7,8 +7,10 @@ import { useUserStore } from './stores/user.js';
 const cartStore = useCartStore();
 const userStore = useUserStore();
 
-
-
+const userlogout = () =>{
+  userStore.logout();
+  alert('已成功登出');
+}
 
 </script>
 
@@ -20,12 +22,13 @@ const userStore = useUserStore();
       </div>
       
       <div class="user-actions">
-        <template v-if="!userStore.isLoggedIn">
+        <template v-if="!userStore.isLoggedIn">   <!--旗標判斷是否登入-->
         <RouterLink to="/login">會員登入</RouterLink>
         </template>
 
         <template v-else>
-          <span class="welcome-message">歡迎您, {{ userStore.userInformation.email }}</span>
+          <RouterLink to="/profile" class="welcome-message">歡迎您, {{ userStore.userInformation.email }}</RouterLink>
+          <button @click="userlogout">登出</button>
         </template>
 
 
@@ -40,7 +43,7 @@ const userStore = useUserStore();
 
     <footer class="footer">
       <p>&copy; 2025 高爾夫球具商城. All rights reserved.</p>
-      <p>公司地址 : 台北市信義區信義路777號</p>
+      <p>本網站為個人作品集展示，非商業用途</p>
     </footer>
   </div>
 </template>

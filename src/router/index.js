@@ -11,6 +11,8 @@ import ProductDetail from "../views/ProductDetail.vue";
 import Login from "../views/Login.vue";
 import Cart from '../views/Cart.vue';
 import Register from '../views/Register.vue';
+import Profile from '../views/Profile.vue';
+
 
 // 定義我們的路由規則
 const rt = [
@@ -41,7 +43,14 @@ const rt = [
         path: "/cart",
         name: "Cart",
         component: Cart
+    },
+
+     {
+        path: "/profile",
+        name: "Profile",
+        component: Profile
     }
+
 
 ];
 

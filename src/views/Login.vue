@@ -6,7 +6,7 @@ import { useRouter } from 'vue-router';
 // 引入我們建立的 useUserStore；
 import { useUserStore } from '../stores/user.js';
 
-// 為了示範 v-model，我們加上 ref
+// 使用v-model，我們加上 ref
 const username = ref('');
 const email = ref('');
 const password = ref('');
@@ -35,19 +35,21 @@ const userLogin = async () => {
     <div class="login-box">
       <h2>會員登入</h2>
       <form @submit.prevent="userLogin">
+        
         <div class="form-group">
           <label for="username">使用者名稱</label>
-          <input type="text" id="username" v-model="username" required placeholder="請輸入您的名稱">
+          <input type="text" id="username" v-model="username" required placeholder="請輸入您的名稱">  <!--required屬性，若表格內未輸入會跳出提示-->
         </div>
+        
         <div class="form-group">
           <label for="email">電子郵件</label>
-          <input type="email" id="email" v-model="email" required placeholder="請輸入您的 Email">
-        </div>
-        <div class="form-group">
-          <label for="password">密碼</label>
-          <input type="password" id="password" v-model="password" required placeholder="請輸入您的密碼">
+          <input type="email" id="email" v-model="email" required placeholder="請輸入您的 Email">  <!--required屬性，若表格內未輸入會跳出提示-->
         </div>
 
+        <div class="form-group">
+          <label for="password">密碼</label>
+          <input type="password" id="password" v-model="password" required placeholder="請輸入您的密碼">  <!--required屬性，若表格內未輸入會跳出提示-->
+        </div>
         <button type="submit">登入</button>
         
         <RouterLink to="/register" class="register-link">申請會員</RouterLink>
