@@ -14,7 +14,7 @@ const confirmPassword = ref('');
 
 
 const userUpdatePassword = async () =>{
-    //再次判斷密碼是否兩者相同，密碼是否有輸入
+    //為第二道防線，再次判斷密碼是否兩者相同，密碼是否有輸入
     if(!newPassword){
         alert('密碼不得為空');
         return;
@@ -23,8 +23,8 @@ const userUpdatePassword = async () =>{
         alert('密碼兩次輸入不相同');
         return;
     }
-    // 呼叫 store 裡的 updatePassword 動作
-    const success = await userStore.updatePassword(newPassword);
+    // 為第三道防線，呼叫 store 裡的 updatePassword 動作
+    const success = await userStore.updatePassword(newPassword.value);
         if(success){
             alert('密碼更新成功！');
             //把輸入格清空
@@ -49,9 +49,6 @@ const usertDeleteAccount = async () =>{
         }
 };
 
-
-
-
 </script>
 
 
@@ -62,7 +59,7 @@ const usertDeleteAccount = async () =>{
       
       <div class="info-section">
         <h3>您的資訊</h3>
-        <p><strong>Email:</strong> {{ userStore.user?.email }}</p>
+        <p><strong>Email:</strong> {{ userStore.userInformation.email }}</p>
       </div>
 
       <div class="action-section">

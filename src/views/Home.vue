@@ -51,6 +51,7 @@ const axiosData = async () =>{
   }
 };
 
+//onMounted 裡面存放一個函數
 onMounted(() => {
   axiosData();
 })

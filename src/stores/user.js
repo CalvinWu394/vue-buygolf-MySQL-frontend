@@ -22,23 +22,22 @@ export const useUserStore = defineStore("user", () => {
     // 【動作 (Actions)】
     // 這裡我們定義一個名為 login 的函式，它是一個非同步 (async) 函式；
     // 這個函式負責處理登入的邏輯，它接收name、email、password 作為參數；
-    const login = async(username, email, password) =>{
+    const login = async(getUsername, getEmail, getPassword) =>{
         try{
-            //將傳進來的值，改為JavaScript 物件，才能讓post
+            //將傳進來的值，改為JSON格式
             const all = {
-                username: username,
-                email: email,
-                password: password
+                username: getUsername,
+                email: getEmail,
+                password: getPassword
             };
 
             //向後端伺服器發送一個POST請求，response 接收回來的格式是由 axios 打包好的JavaScript 物件 (Object)
             const response = await axios.post('http://localhost:3000/api/login', all);
             //如果登入成功把回傳的資料存到 userInformation 這個 ref 裡，其他頁面可以抓取裡面資料
             userInformation.value = response.data;
-
             //同時，把 isLoggedIn 的旗標設為 true；
             isLoggedIn.value = true;
-            console.log('登入成功:', response.data);
+            console.log('登入成功');
 
             //會回傳給 Login.vue 的 success
             return true;  
@@ -58,24 +57,69 @@ export const useUserStore = defineStore("user", () => {
         isLoggedIn.value = false;
     }
 
-    const updatePassword = async (newPassword) =>{
-        // 先檢查使用者是否登入，以及 user 物件和 user.id 是否存在，這是一個保護措施
+    const updatePassword = async (getNewPassword) =>{
+        // 為第三道防線檢查使用者是否登入，以及 userInformation 物件、 userInformation.id 是否存在
+        /*if(!isLoggedIn.value || !userInformation.value || userInformation.value.id){
+            console.log(isLoggedIn.value,userInformation.value,userInformation.value.id);
+            alert("請登入");
+            return false;
+        }*/
+       if(!isLoggedIn.value){
+            alert("請登入");
+            return false;
+        }
+
+        try{
+            //取得目前登入使用者的 ID
+            const userId = userInformation.value.id;
+
+            const all = {
+                password: getNewPassword
+            };
+
+            //使用 axios.put 向後端發送請求，第二個參數要為JSON格式
+            //使用樣板字串 `` 來動態嵌入 userId
+
+            await axios.put(`http://localhost:3000/api/user/${userId}`, all);
+            return true;
         
-    }
+        }catch(error){
+            console.error('更新錯誤')
+            return false;
 
-    const deleteAccount = () =>{
-        
-    }
+        }
+    };
 
+    const deleteAccount = async () =>{
+        // 為第三道防線檢查使用者是否登入，以及 userInformation 物件、 userInformation.id 是否存在
+        if(isLoggedIn.value || !userInformation.value || userInformation.value.id){
+            alert("請登入");
+            return false;
+        }
+        try{
+            //取得目前登入使用者的 ID
+            const userId = userInformation.value.id;
+            
+            //使用 axios.delete 向後端發送刪除請求
+            await axios.delete(`http://localhost:3000/api/user/${userId}`);
+            // 帳號刪除成功後，前端也應該執行登出邏輯，清空使用者狀態
+            logout();
+            return true;
 
+        }catch(error){
+            console.error('刪除失敗');
+            return false;
 
-
+        }
+    };
 
        // 最後要 export，這樣其他的元件才能使用它們；
         return{
         userInformation,
         isLoggedIn,
         login,
-        logout
+        logout,
+        updatePassword,
+        deleteAccount
     };
 });

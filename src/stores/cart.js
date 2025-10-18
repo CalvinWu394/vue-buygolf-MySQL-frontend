@@ -20,11 +20,9 @@ const cart = ref([]);
 
 
 //這在 Pinia 中被稱為【動作 (Actions)】
-// 我們也把 addToCart 函式搬過來，並把它變成一個「動作 (Action)」；
 // 任何元件都可以呼叫這個 action 來把商品加入購物車；
 // 接收商品物件與加入的數量
-//quantity = 1 是語法糖寫法，表示當quantity沒有傳入就預設為1
-const addToCart = (product, quantity = 1 ) => {
+const addToCart = (product, quantity) => {
     const existProduct = cart.value.find(item => item.firestoreId === product.firestoreId)
     if(existProduct){
       existProduct.quantity = existProduct.quantity + quantity;
@@ -54,6 +52,11 @@ const totalPrice = computed(function() {
       return sum + (i.price * i.quantity);
     }, 0);
 });
+
+
+const removeFromCart = (removeItem) =>{
+  
+}
 
 
 // 最後要 export，這樣其他的元件才能使用它們；
