@@ -14,8 +14,7 @@ import { defineStore } from 'pinia';
 export const useCartStore = defineStore("cart", () => {
 
 //這在 Pinia 中被稱為【狀態 (State)】
-// 我們把原本在 Home.vue 裡的 cart 陣列，搬到這裡來；
-// 存放的「共享資料」，包含商品資訊+數量；
+// 存放的「共享資料」，包含商品資訊；
 const cart = ref([]);
 
 
@@ -27,7 +26,10 @@ const addToCart = (product, quantity) => {
     if(existProduct){
       existProduct.quantity = existProduct.quantity + quantity;
     }else{ 
-      cart.value.push({ ...product, quantity: quantity });  //展開語法 (...) ,建立複製品並新增quantity這個物件
+       //展開語法 (...) ,把 product 這個物件裡所有的屬性（name, price, image 等）全部複製一份出來，建立一個全新的物件
+       //, quantity: quantity：接著，在這個全新的複製物件上，新增一個叫做 quantity 的屬性，它的值就是這次傳進來的 quantity
+      cart.value.push({ ...product, quantity: quantity }); 
+      console.log(cart.value);
         
     }
     alert(`將 ${quantity} 個添加至購物車`);
@@ -36,9 +38,10 @@ const addToCart = (product, quantity) => {
 
 //這在 Pinia 中被稱為【取值器（Getter）】
 //計算購物車的商品數量加總
-//.reduce() 回傳的值便是累加器迭代完整個陣列的結果
+//.reduce(myFunction, initialValue)，myFunction分別代表四個值，常用為前兩個累加器、當前值
+//.reduce() 回傳的值，便是累加器迭代完整個陣列的結果
 //i是一個暫存
-//從總和(sum)為 0 開始，依序把每個項目(i)的數量(quantity)加到總和(sum)裡面
+//從總和(sum)為 0 開始累加，依序把每個項目 i（是當前值的代號）的 quantity 加到總和sum裡面
 const cartCount = computed(function(){
   return cart.value.reduce(function(sum, i){
     return sum + i.quantity
@@ -46,7 +49,7 @@ const cartCount = computed(function(){
 });
 
 //計算購物車總金額
-// 0 是初始值
+//.reduce的初始值為 0
 const totalPrice = computed(function() {
     return cart.value.reduce(function(sum, i) {
       return sum + (i.price * i.quantity);
@@ -54,7 +57,12 @@ const totalPrice = computed(function() {
 });
 
 
-const removeFromCart = (removeItem) =>{
+const removeFromCart = (removeId) => {
+  //.filter()只有符合條件的項目才會被保留下來
+  const remainItem = cart.value.filter(item => item.firestoreId!==removeId)
+  //把回傳的陣列塞回去cart
+  cart.value = remainItem;
+
   
 }
 
@@ -64,6 +72,7 @@ return{
     cart,
     addToCart,
     cartCount,
-    totalPrice
+    totalPrice,
+    removeFromCart
 };
 });

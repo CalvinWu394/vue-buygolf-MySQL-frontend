@@ -35,6 +35,10 @@ export const useUserStore = defineStore("user", () => {
             const response = await axios.post('http://localhost:3000/api/login', all);
             //如果登入成功把回傳的資料存到 userInformation 這個 ref 裡，其他頁面可以抓取裡面資料
             userInformation.value = response.data;
+            
+            //可以看到後端使用res.json回傳的資訊
+            //console.log(userInformation.value);
+            
             //同時，把 isLoggedIn 的旗標設為 true；
             isLoggedIn.value = true;
             console.log('登入成功');
@@ -113,7 +117,8 @@ export const useUserStore = defineStore("user", () => {
         }
     };
 
-       // 最後要 export，這樣其他的元件才能使用它們；
+
+        // 最後要 export，這樣其他的元件才能使用它們；
         return{
         userInformation,
         isLoggedIn,

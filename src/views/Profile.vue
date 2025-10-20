@@ -28,8 +28,8 @@ const userUpdatePassword = async () =>{
         if(success){
             alert('密碼更新成功！');
             //把輸入格清空
-            newPassword.value = ' ';
-            confirmPassword.value = ' ';
+            newPassword.value = '';
+            confirmPassword.value = '';
         }else{
             alert('密碼更新失敗！');
         }
