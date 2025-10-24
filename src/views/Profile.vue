@@ -13,7 +13,7 @@ const newPassword = ref('');
 const confirmPassword = ref('');
 
 
-const userUpdatePassword = async () =>{
+const userUpdatePassword = async () => {
     //為第二道防線，再次判斷密碼是否兩者相同，密碼是否有輸入
     if(!newPassword){
         alert('密碼不得為空');
@@ -26,16 +26,18 @@ const userUpdatePassword = async () =>{
     // 為第三道防線，呼叫 store 裡的 updatePassword 動作
     const success = await userStore.updatePassword(newPassword.value);
         if(success){
-            alert('密碼更新成功！');
-            //把輸入格清空
+            alert('密碼更新成功，下次登入請使用新密碼！');
+            //把輸入格清空回到原本預設ref('')
             newPassword.value = '';
             confirmPassword.value = '';
+            //更新後跳回首頁
+            router.push('/');
         }else{
             alert('密碼更新失敗！');
         }
 };
 
-const usertDeleteAccount = async () =>{
+const usertDeleteAccount = async () => {
     //提醒使用者再次確認是否刪除帳號
     alert('提醒您，刪除後即無法復原');
     // 呼叫 store 裡的 deleteAccount 動作
@@ -59,7 +61,8 @@ const usertDeleteAccount = async () =>{
       
       <div class="info-section">
         <h3>您的資訊</h3>
-        <p><strong>Email:</strong> {{ userStore.userInformation.email }}</p>
+        <!--因為執行刪除會員時，會同時執行logout()，這時候userInformation.value變成null，會導致程式跳錯誤，要使用可選串連(?.)-->
+        <p><strong>Email:</strong> {{ userStore.userInformation?.email }}</p>
       </div>
 
       <div class="action-section">
@@ -85,6 +88,8 @@ const usertDeleteAccount = async () =>{
     </div>
   </div>
 </template>
+
+
 
 <style scoped>
 .profile-container {

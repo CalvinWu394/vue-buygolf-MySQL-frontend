@@ -1,10 +1,13 @@
 <script setup>
 import { ref } from 'vue';
 import axios from 'axios';
+//從 'vue-router' 引入 useRouter，我們需要它來跳轉頁面；
+import { useRouter } from 'vue-router';
 
 const username = ref('');
 const email = ref('');
 const password = ref('');
+const router = useRouter();
 
 const axiosRegister = async () => {
     if( !username.value.trim()|| !email.value.trim() || !password.value.trim() ){
@@ -21,7 +24,8 @@ const axiosRegister = async () => {
     const response = await axios.post('http://localhost:3000/api/register', all);
     //印出 response 接收回來的格式是由 axios 打包好的JavaScript 物件 (Object)
     console.log(response.data);
-    alert('註冊成功！');   
+    alert('註冊成功！');
+    router.push('/');
     
     }catch(error){
     //如果請求失敗，把錯誤訊息印在 console，方便除錯

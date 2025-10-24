@@ -62,8 +62,6 @@ const removeFromCart = (removeId) => {
   const remainItem = cart.value.filter(item => item.firestoreId!==removeId)
   //把回傳的陣列塞回去cart
   cart.value = remainItem;
-
-  
 }
 
 

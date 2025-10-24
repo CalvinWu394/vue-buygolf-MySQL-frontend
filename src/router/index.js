@@ -13,6 +13,9 @@ import Cart from '../views/Cart.vue';
 import Register from '../views/Register.vue';
 import Profile from '../views/Profile.vue';
 
+// 引入我們建立的 useUserStore；
+import { useUserStore } from '../stores/user.js';
+
 
 // 定義我們的路由規則
 const rt = [
@@ -48,15 +51,30 @@ const rt = [
      {
         path: "/profile",
         name: "Profile",
-        component: Profile
+        component: Profile,
+        //路由守衛
+        //to 想要到哪
+        //from 從哪裡來
+        //next (函式)，讓路由器知道下一步怎麼做
+        beforeEnter: (to, from, next) => {
+            const useStore = useUserStore();
+            //判斷使用者是否已登入
+            if(useStore.isLoggedIn){
+                next();
+            }
+            else{
+                alert('請先登入會員才能查看！');
+                next('/login');
+            }
+        }
     }
-
-
 ];
 
-// 建立 router 實體
+// 從 vue-router 引入的「路由工廠」函式
 const r = createRouter({
+    //指定網址要使用的模式
     history: createWebHistory(),
+    //上面定義的路由規則陣列
     routes: rt
 });
 

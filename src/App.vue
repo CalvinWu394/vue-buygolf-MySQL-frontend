@@ -3,13 +3,20 @@
 import { useCartStore } from "./stores/cart.js";
 import { useUserStore } from './stores/user.js';
 
+//從 vue-router 引入 useRouter
+import { useRouter } from "vue-router";
+
 //呼叫函式來取得 store 的遙控器；
 const cartStore = useCartStore();
 const userStore = useUserStore();
+//取得 router 實例 (遙控器)
+const router = useRouter();
 
 const userlogout = () =>{
   userStore.logout();
   alert('已成功登出');
+  
+  router.push('/');
 }
 
 </script>
@@ -18,11 +25,13 @@ const userlogout = () =>{
   <div id="app-container">
     <header class="header">
       <div class="logo">
-        <RouterLink to="/">G Zone</RouterLink>   <!-- 不需要再次import,因為在main.js透過 app.use(router)已經有宣告為全域 -->
+        <!-- 該元件不需要再次import,因為在main.js透過 app.use(router)已經有宣告為全域 -->
+        <RouterLink to="/">G Zone</RouterLink>   
       </div>
       
       <div class="user-actions">
-        <template v-if="!userStore.isLoggedIn">   <!--旗標判斷是否登入-->
+        <!--旗標判斷是否登入-->
+        <template v-if="!userStore.isLoggedIn">   
         <RouterLink to="/login">會員登入</RouterLink>
         </template>
 
@@ -38,7 +47,7 @@ const userlogout = () =>{
     </header>
 
     <main class="main-content">
-      <RouterView />      <!-- 其隨著 <router-link> 的路徑切換，負責顯示出匹配當前路徑的元件內容 -->
+    <RouterView></RouterView>      <!-- 其隨著 <router-link> 的路徑切換，負責顯示出內容 -->
     </main>
 
     <footer class="footer">
